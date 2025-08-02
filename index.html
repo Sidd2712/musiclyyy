@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AR.js Animated 3D Models</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.4.0/dist/aframe-extras.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js" integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* CSS for the start button overlay */
+        #start-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            text-align: center;
+        }
+        #start-button {
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 2px solid white;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="margin : 0px; overflow: hidden;">
+
+<div id="start-overlay">
+    <div>
+        <h1>AR Music Experience</h1>
+        <p>Tap to start</p>
+        <button id="start-button">START</button>
+    </div>
+</div>
+
+<a-scene arjs="detectionMode: mono_and_matrix; matrixCodeType: 3x3">
+    <a-assets>
+        <a-asset-item id="drums-model" src="./assets/drum/scene.gltf"></a-asset-item>
+        <a-asset-item id="guitar-model" src="./assets/guitar/scene.gltf"></a-asset-item>
+        <a-asset-item id="mic-model" src="./assets/mic/scene.gltf"></a-asset-item>
+        <a-asset-item id="piano-model" src="./assets/piano/scene.gltf"></a-asset-item>
+    </a-assets>
+
+    <a-marker name="drums" class="ar-marker" type="barcode" value="0">
+        <a-entity gltf-model="#drums-model" rotation="-90 0 0" scale="0.5 0.5 0.5" position="0 0 0" animation-mixer="clip: *; loop: repeat; timeScale: 0"></a-entity>
+    </a-marker>
+    <a-marker name="guitar" class="ar-marker" type="barcode" value="1">
+        <a-entity gltf-model="#guitar-model" rotation="-90 0 0" scale="0.8 0.8 0.8" position="0 0 0" animation-mixer="clip: *; loop: repeat; timeScale: 0"></a-entity>
+    </a-marker>
+    <a-marker name="mic" class="ar-marker" type="barcode" value="2">
+        <a-entity gltf-model="#mic-model" rotation="-90 0 0" scale="1 1 1" position="0 0 0" animation-mixer="clip: *; loop: repeat; timeScale: 0"></a-entity>
+    </a-marker>
+    <a-marker name="piano" class="ar-marker" type="barcode" value="3">
+         <a-entity gltf-model="#piano-model" rotation="-90 0 180" scale="0.5 0.5 0.5" position="0 0 0" animation-mixer="clip: *; loop: repeat; timeScale: 0"></a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+    // This is the ONLY declaration of audioMap
+    const audioMap = {
+        'guitar': new Howl({ src: ['./assets/audio/guitar.mp3'], loop: true }),
+        'drums': new Howl({ src: ['./assets/audio/drums.mp3'], loop: true }),
+        'piano': new Howl({ src: ['./assets/audio/piano.mp3'], loop: true }),
+        'mic': new Howl({ src: ['./assets/audio/mic.mp3'], loop: true })
+    };
+
+    // Event listener for the start button
+    document.getElementById('start-button').addEventListener('click', function() {
+        // Play and immediately mute all sounds to "unlock" them
+        for (const sound of Object.values(audioMap)) {
+            sound.play();
+            sound.mute(true);
+        }
+        // Hide the start overlay
+        document.getElementById('start-overlay').style.display = 'none';
+    });
+
+    // Event listeners for the AR markers
+    window.onload = function () {
+        const arMarkers = document.getElementsByClassName('ar-marker');
+
+        Array.from(arMarkers).forEach(function (arMarker) {
+            const name = arMarker.getAttribute('name');
+            const modelEntity = arMarker.querySelector('a-entity');
+            const sound = audioMap[name];
+
+            arMarker.addEventListener('markerFound', function () {
+                modelEntity.setAttribute('animation-mixer', 'timeScale', 1);
+                sound.mute(false);
+            });
+
+            arMarker.addEventListener('markerLost', function () {
+                modelEntity.setAttribute('animation-mixer', 'timeScale', 0);
+                sound.mute(true);
+            });
+        });
+    };
+</script>
+
+</body>
+</html>

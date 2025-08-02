@@ -1,0 +1,11 @@
+Model Information:
+* title:	piano
+* source:	https://sketchfab.com/3d-models/piano-ff9a23cce99e4f068d0d010f7391068b
+* author:	janwei (https://sketchfab.com/janwei)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "piano" (https://sketchfab.com/3d-models/piano-ff9a23cce99e4f068d0d010f7391068b) by janwei (https://sketchfab.com/janwei) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
